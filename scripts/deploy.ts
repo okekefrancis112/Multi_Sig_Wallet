@@ -1,18 +1,47 @@
+import { HardhatUserConfig } from "hardhat/config";
+import "@nomicfoundation/hardhat-toolbox";
+
 import { ethers } from "hardhat";
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+// const lockedAmount = ethers.utils.parseEther("1");
+// let valid1, valid2, valid3, valid4;
+let [valid1, valid2, valid3, valid4, valid5] = await ethers.getSigners();
 
-  const lockedAmount = ethers.utils.parseEther("1");
+const MultisigFactory = await ethers.getContractFactory("MultiSigFactory");
+const multisigFactory = await MultisigFactory.deploy();
 
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+await multisigFactory.deployed();
 
-  await lock.deployed();
+console.log(
+"factory contract deployed to this address",
+multisigFactory.address
+);
+// let cloned = await multisigFactory.cloneMultiSig([
+// valid1.address,
+// valid2.address,
+// valid3.address,
+// valid4.address,
+// valid5.address,
+// ]);
 
-  console.log("Lock with 1 ETH deployed to:", lock.address);
+
+// const clone2 = await multisigFactory
+// .connect(valid2)
+// .cloneMultiSig([
+// valid1.address,
+// valid2.address,
+// valid3.address,
+// valid4.address,
+// valid5.address,
+// ]);
+// let result = (await clone2.wait()).logs[0].topics.length;
+// let result1 = (await clone2.wait()).logs[0].topics[0];
+// let result2 = (await clone2.wait()).logs[0].topics[1];
+// let result3 = (await clone2.wait()).logs[0].topics[2];
+
+// console.log(result, "factory cloned successfully");
+// console.log("we are the logger", result1, result2, result3);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
@@ -20,4 +49,4 @@ async function main() {
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
-});
+  });
